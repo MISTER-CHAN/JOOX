@@ -44,7 +44,7 @@ namespace Joox
                 {
                     return;
                 }
-                string first6 = ms[0].Value.Substring(20, 6), l = "", second6 = "", l6_ = "";
+                string l = "", first6 = ms[0].Value.Substring(20, 6), second6 = "";
                 if (ms.Count >= 3)
                 {
                     int i;

@@ -37,8 +37,7 @@ namespace Joox
         {
             try
             {
-                string h = "";
-                h = (string)webView.EvalScript("document.documentElement.outerHTML");
+                string h = webView.EvalScript("document.documentElement.outerHTML").ToString();
                 MatchCollection ms = new Regex("<p class=\"sc-[A-Za-z]{6} [A-Za-z]{6}\">.+?</p>").Matches(h);
                 if (ms.Count == 0)
                 {

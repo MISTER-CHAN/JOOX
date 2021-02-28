@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -38,46 +39,44 @@ namespace Joox
             try
             {
                 string h = webView.EvalScript("document.documentElement.outerHTML").ToString();
-                MatchCollection ms = new Regex("<p class=\"sc-[A-Za-z]{6} [A-Za-z]{6}\">.+?</p>").Matches(h);
-                if (ms.Count == 0)
+                string[] lyrics = Regex.Matches(h, "<p class=\"sc-[A-Za-z]{6} [A-Za-z]{6}\">.+?</p>").Cast<Match>().Select(m => m.Value).ToArray();
+                if (lyrics.Length == 0)
                 {
                     return;
                 }
-                string l = "", first6 = ms[0].Value.Substring(20, 6), second6 = "";
-                if (ms.Count >= 3)
+                string l = "";
+                if (lyrics.Length >= 3)
                 {
                     int i;
-                    for (i = 1; i < ms.Count; i++)
+                    string[] sixes = lyrics.Select(s => s.Substring(20, 6)).ToArray();
+                    string six = sixes[0];
+                    if (sixes[1] != six)
                     {
-                        string s6 = ms[i].Value.Substring(20, 6);
-                        if (s6 == first6)
+                        if (sixes[2] == sixes[1])
                         {
-                            continue;
-                        }
-                        else if (i == 1)
-                        {
-                            second6 = s6;
-                        }
-                        else if (second6 == "")
-                        {
-                            break;
-                        }
-                        else if (s6 == first6)
-                        {
-                            i = 1;
-                            break;
+                            six = sixes[1];
+                            i = 0;
                         }
                         else
                         {
-                            i = 0;
-                            break;
+                            i = 1;
                         }
                     }
-                    l = new Regex("(?<=>).+?(?=<)").Match(ms[i].Value).Value;
+                    else
+                    {
+                        for (i = 2; i < sixes.Length; i++)
+                        {
+                            if (sixes[i] != six)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    l = Regex.Match(lyrics[i], "(?<=<p class=\"sc-[A-Za-z]{6} [A-Za-z]{6}\">).+?(?=</p>)").Value;
                 }
                 else
                 {
-                    l = ms[0].Value;
+                    l = lyrics[0];
                 }
                 lyric.lblLyric.Text = l;
             }

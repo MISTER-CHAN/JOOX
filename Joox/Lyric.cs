@@ -33,6 +33,10 @@ namespace Joox
                 WindowState = FormWindowState.Normal;
                 FormBorderStyle = FormBorderStyle.None;
             }
+            if (FormBorderStyle == FormBorderStyle.None)
+            {
+                SetWindowLong(Handle, -20, 0x20 | 0x80000);
+            }
         }
 
         [DllImport("user32.dll")]
